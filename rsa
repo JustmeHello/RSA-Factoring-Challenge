@@ -1,3 +1,46 @@
 #!/usr/bin/python3
 
 import sys
+import math
+import random
+
+def gcd(a, b):
+    while b:
+        a, b = b, a % b
+    return a
+def pollards_rho(n):
+    if n % 2 == 0:
+        return 2
+    x = random.randit(1, n-1)
+    y = x
+    c = random.randit(1, n-1)
+    d = 1
+    while d == 1:
+        x = (x*x + c) % n
+        y = (y*y + c) % n
+        y = (y*y + c) % n
+        d = gcd(abs(x - y), n)
+    return d
+def factorize(n):
+    factors = []
+    while n > 1:
+        factor = pollards_rho(n)
+        factors.append(factor)
+        n //= factor
+    return factors
+def main():
+    if len(sys.argv) != 2:
+        print("Usage: rsa <file>")
+        sys.exit(1)
+
+    input_file = sys.argv[1]
+
+    with open(input_file, 'r') as file:
+        numbers = file.read().splitlines()
+
+    for number in numbers:
+        n = int(number)
+        factors = factorize(n)
+        print(f"{n}={'*'.join(map(str, factors))}")
+if __name__ == "__main__":
+    main()
